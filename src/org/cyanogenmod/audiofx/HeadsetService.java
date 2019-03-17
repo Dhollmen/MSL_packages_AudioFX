@@ -218,12 +218,20 @@ public class HeadsetService extends Service {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             int sessionId = intent.getIntExtra(AudioEffect.EXTRA_AUDIO_SESSION, 0);
+
+            String packageName = intent.getStringExtra(AudioEffect.EXTRA_PACKAGE_NAME);
+            if (packageName.equals("org.schabi.newpipe")) {
+                Log.i(TAG, String.format("NEWPIPE NO - Session : %d", sessionId));
+                return;
+            }
+            
             if (action.equals(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION)) {
                 Log.i(TAG, String.format("New audio session: %d", sessionId));
                 if (!mAudioSessions.containsKey(sessionId)) {
                     mAudioSessions.put(sessionId, new EffectSet(sessionId));
                 }
             }
+            
             if (action.equals(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION)) {
                 Log.i(TAG, String.format("Audio session removed: %d", sessionId));
                 EffectSet gone = mAudioSessions.remove(sessionId);
